@@ -44,3 +44,74 @@
     --z-fixed:10;
     --z-modal:100;
 }
+
+/* Responsive Typography */
+@media screen and (max-width:1024px){
+    :root{
+        --biggest-font-size:2rem;
+        --h1-font-size:1.5rem;
+        --h2-font-size:1.25rem;
+        --h3-font-size:1.125rem;
+        --normal-font-size:.938rem;
+        --small-font-size:.813rem;
+        --smaller-font-size:.75rem;
+    }
+
+}
+
+/*====== BASE =========*/
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html {
+    scroll-behavior: smooth;
+}
+body,
+button,
+input{
+    font-family: var(--body-font);
+    font-size:var(--normal-font-size);
+}
+
+body {
+    background-color: var(--body-color);
+    color: var(--text-color);
+}
+h1,h2,h3 {
+    color:var(--title-color);
+    font-weight: var(--font-bold);
+}
+
+ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+img {
+    max-width: 100%;
+    height: auto;
+}
+button{
+    cursor: pointer;
+}
+
+button,
+input{
+    border: none;
+    outline: none;
+}
+
+
+
+
+
+/*====== LAYOUT=========*/
+/*====== RESUABLE CSS CLASSES =========*/
+/*====== SIDEBAR =========*/
+/*====== MAIN =========*/
+/*====== Home section =========*/
+/*====== Buttons =========*/
