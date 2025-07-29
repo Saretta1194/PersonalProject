@@ -336,16 +336,16 @@
         <h2 data-heading="My Portfolio" class="section__title">Recents Works</h2>
 
         <div class="work__filters">
-            <span class="work__item active-work">All</span>
-            <span class="work__item">Web</span>
-            <span class="work__item">App</span>
+            <span class="work__item active-work" data-filter="all">All</span>
+            <span class="work__item" data-filter="web">Web</span>
+            <span class="work__item" data-filter="app">App</span>
         </div>
 
         <div class="work__container container grid">
-            <div class="work__card">
+            <div class="work__card" data-category="web">
                 <img src="assets/images/responsive 2.jpg" alt="" class="work__img">
                 <h3 class="work__title">HealthyBites</h3>
-                <span class="work__button">Demo
+                <span class="work__button">Show
                     <i class="uil uil-arrow-right work__button-icon"></i>
                 </span>
                 <div class="portfolio__item-details">
@@ -354,15 +354,15 @@
                     <ul class="details__info">
                         <li>Created - <span>February 2025</span></li>
                         <li>Technologies - <span>HTML,CSS</span></li>
-                        <li>View - <span><a href="https://saretta1194.github.io/HealthyBites/index.html"></a></span></li>
+                        <li>View - <span><a href="https://saretta1194.github.io/HealthyBites/index.html">Live Site</a></span></li>
                     </ul>
                 </div>
             </div>
 
-            <div class="work__card">
+            <div class="work__card" data-category="app">
                 <img src="assets/images/screen1.jpg" alt="" class="work__img">
                 <h3 class="work__title">Dot Runner</h3>
-                <span class="work__button">Demo
+                <span class="work__button">Show
                     <i class="uil uil-arrow-right work__button-icon"></i>
                 </span>
                 <div class="portfolio__item-details">
@@ -372,15 +372,15 @@
                     <ul class="details__info">
                         <li>Created - <span>April 2025</span></li>
                         <li>Technologies - <span>HTML, CSS, JavaScript</span></li>
-                        <li>View - <span> <a href="https://saretta1194.github.io/Dot-Runner/"></a></span></li>
+                        <li>View - <span><a href="https://saretta1194.github.io/Dot-Runner/">Live Site</a></span></li>
                     </ul>
                 </div>
             </div>
 
-            <div class="work__card">
+            <div class="work__card" data-category="web">
                 <img src="assets/images/responsive.jpg" alt="" class="work__img">
                 <h3 class="work__title">BrainSync</h3>
-                <span class="work__button">Demo
+                <span class="work__button">Show
                     <i class="uil uil-arrow-right work__button-icon"></i>
                 </span>
                 <div class="portfolio__item-details">
@@ -389,7 +389,7 @@
                     <ul class="details__info">
                         <li>Created - <span>June 2025</span></li>
                         <li>Technologies - <span>HTML, CSS, JavaScript, Python</span></li>
-                        <li>View - <span> <a href="https://brainsync-0f71c4bb1b9c.herokuapp.com/"></a></span></li>
+                        <li>View - <span><a href="https://brainsync-0f71c4bb1b9c.herokuapp.com/">Live Site</a></span></li>
                     </ul>
                 </div>
             </div>
@@ -397,15 +397,58 @@
         </div>
 
     </section>
-    <!--=== Services ===-->
-    <!--=== Testimonals ===-->
     <!--=== Contact===-->
+    <!--=== Contact ===-->
+<section class="contact section" id="contact">
+    <h2 data-heading="Get in Touch" class="section__title">Contact Me</h2>
+  
+    <div class="contact__container container grid">
+      <div class="contact__info">
+        <div class="contact__card">
+          <i class="fa-solid fa-envelope contact__icon"></i>
+          <h3 class="contact__title">Email</h3>
+          <span class="contact__subtitle">sara.rosati@tiscali.it</span>
+          <a href="mailto:sara.rosati@tiscali.it" class="contact__button">
+            Write me <i class="uil uil-arrow-right contact__button-icon"></i>
+          </a>
+        </div>
+  
+        <div class="contact__card">
+          <i class="fa-brands fa-whatsapp contact__icon"></i>
+          <h3 class="contact__title">WhatsApp</h3>
+          <span class="contact__subtitle">+41 762755887</span>
+          <a href="https://wa.me/41762755887" target="_blank" class="contact__button">
+            Write me <i class="uil uil-arrow-right contact__button-icon"></i>
+          </a>
+        </div>
+  
+        <div class="contact__card">
+          <i class="fa-brands fa-facebook-messenger contact__icon"></i>
+          <h3 class="contact__title">Messenger</h3>
+          <span class="contact__subtitle">@sara.rosati.14</span>
+          <a href="https://m.me/sara.rosati.14" target="_blank" class="contact__button">
+            Write me <i class="uil uil-arrow-right contact__button-icon"></i>
+          </a>
+        </div>
+      </div>
+  
+      <form action="https://formspree.io/f/mldlnvev" method="POST" class="contact__form">
+        <div class="contact__form-group">
+          <input type="text" name="name" class="contact__input" placeholder="Your Name" required>
+          <input type="email" name="email" class="contact__input" placeholder="Your Email" required>
+        </div>
+        <textarea name="message" class="contact__input" placeholder="Your Message" rows="6" required></textarea>
+        <button type="submit" class="button">
+          <i class="fa-solid fa-paper-plane button__icon"></i> Send Message
+        </button>
+      </form>
+    </div>
+  </section>
+  
     </main>
 
     <!-- FOOTER -->
     <!-- SCROLL UP-->
-    <!-- MIXITUP FILTER -->
-     <script src=""></script>
     <!-- SWIPER JS-->
     <script src=""></script>
     <!-- MAIN JS-->

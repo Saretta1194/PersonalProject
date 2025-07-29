@@ -578,11 +578,83 @@ input{
     transition:.3s;
 }
 .work__button:hover .work__button-icon {
-    
+
 }
 /*===== Active Item Work ======*/
 .active-work {
     background-color: var(--skin-color);
     color:var(--title-color);
 }
-/*===== Services Section ======*/
+/*===== Contact Section ======*/
+.contact__container {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    align-items: start;
+  }
+  
+  .contact__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .contact__card {
+    background: var(--box-color);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    transition: 0.3s;
+  }
+  
+  .contact__card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .contact__icon {
+    font-size: 2rem;
+    color: var(--skin-color);
+    margin-bottom: 0.5rem;
+  }
+  
+  .contact__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  
+  .contact__subtitle {
+    display: block;
+    margin: 0.25rem 0 0.5rem;
+    color: var(--text-color-light);
+  }
+  
+  .contact__button {
+    font-size: 0.9rem;
+    color: var(--skin-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  
+  .contact__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .contact__form-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .contact__input {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color, #ccc);
+    background: var(--input-bg, #f9f9f9);
+    font-size: 1rem;
+    width: 100%;
+  }
+  

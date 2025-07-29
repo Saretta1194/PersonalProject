@@ -18,4 +18,46 @@ const tabs = document.querySelectorAll('[data-target]'),
 
           })
       })
+/*==========FILTERS ===========*/ 
+document.addEventListener("DOMContentLoaded", function () {
+    const filterButtons = document.querySelectorAll(".work__item");
+    const workCards = document.querySelectorAll(".work__card");
+      
+    filterButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            // Rimuove la classe attiva da tutti i bottoni
+        filterButtons.forEach(btn => btn.classList.remove("active-work"));
+        button.classList.add("active-work");
+      
+        const filterValue = button.getAttribute("data-filter");
+      
+        workCards.forEach(card => {
+            const category = card.getAttribute("data-category");
+            if (filterValue === "all" || category === filterValue) {
+            card.style.display = "block";
+            } else {
+            card.style.display = "none";
+            }
+            });
+          });
+        });
+      });
+
+    document.querySelectorAll('.work__button').forEach(button => {
+        button.addEventListener('click', () => {
+        const details = button.nextElementSibling;
+      
+          // Chiudi altri dettagli aperti (opzionale)
+        document.querySelectorAll('.portfolio__item-details').forEach(d => {
+            if (d !== details) d.style.display = 'none';
+          });
+      
+        // Toggle (apri/chiudi)
+        if (details.style.display === 'block') {
+            details.style.display = 'none';
+          } else {
+         details.style.display = 'block';
+          }
+        });
+      });
       
