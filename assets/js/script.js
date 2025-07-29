@@ -47,16 +47,37 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener('click', () => {
         const details = button.nextElementSibling;
       
-          // Chiudi altri dettagli aperti (opzionale)
+         
         document.querySelectorAll('.portfolio__item-details').forEach(d => {
             if (d !== details) d.style.display = 'none';
           });
       
-        // Toggle (apri/chiudi)
+        // Toggle 
         if (details.style.display === 'block') {
             details.style.display = 'none';
           } else {
          details.style.display = 'block';
+          }
+        });
+      });
+
+      /*==========SCROLL SECTION ACTIVE ===========*/
+      
+      window.addEventListener("scroll", () => {
+        const sections = document.querySelectorAll("section[id]");
+        const scrollY = window.pageYOffset;
+      
+        sections.forEach(current => {
+          const sectionHeight = current.offsetHeight;
+          const sectionTop = current.offsetTop - 50;
+          const sectionId = current.getAttribute("id");
+      
+          const navLink = document.querySelector(".nav__link[href*=" + sectionId + "]");
+      
+          if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+            navLink.classList.add("active-link");
+          } else {
+            navLink.classList.remove("active-link");
           }
         });
       });
