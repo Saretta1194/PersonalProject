@@ -628,13 +628,13 @@ input{
     color: var(--text-color-light);
   }
   
-  .contact__button {
+  /*.contact__button {
     font-size: 0.9rem;
     color: var(--skin-color);
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-  }
+  }*/
   
   .contact__form {
     display: flex;
@@ -649,12 +649,14 @@ input{
   }
   
   .contact__input {
-    flex: 1;
     padding: 0.75rem;
     border-radius: 0.5rem;
     border: 1px solid var(--border-color, #ccc);
     background: var(--input-bg, #f9f9f9);
     font-size: 1rem;
-    width: 100%;
+    width: 75%;
   }
+  .button__small {
+    width: 75%;
+}
   
