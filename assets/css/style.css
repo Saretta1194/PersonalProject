@@ -739,7 +739,7 @@ input{
 }  
 
 /*========== RESPONSIVE DESIGN ==========*/
-/* ========== Responsive Design ========== */
+
 @media screen and (max-width: 450px) {
     .contact__container {
       display: flex;
