@@ -1102,4 +1102,382 @@ input{
       grid-template-columns: repeat(3, 1fr);
     }
   }
-  
+  /* === Star background canvas (behind everything) === */
+#bg-stars{
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;          /* stay behind all content */
+  pointer-events: none; /* do not block clicks */
+  display: block;
+}
+
+/* Keep sections transparent so stars remain visible (your sections are already dark) */
+.section { background: transparent; }
+
+/* === Round avatar with soft glow — non-invasive, stacked above text === */
+.hero__avatar{
+  position: relative;
+  width: 220px;                 /* safe default size */
+  max-width: 60vw;              /* shrink on very small phones */
+  aspect-ratio: 1/1;
+  margin: 1.25rem auto 0;       /* centered, above your text */
+  border-radius: 50%;
+  isolation: isolate;
+}
+.hero__avatar > img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  box-shadow: 0 10px 35px rgba(0,0,0,.18);
+  filter: contrast(1.03) saturate(1.02);
+}
+/* soft neon ring, subtle */
+.hero__ring{
+  position: absolute; inset: -6px; border-radius: 50%;
+  background: conic-gradient(from 0deg,
+    #8b5cf6, #06b6d4, #22c55e, #f59e0b, #ef4444, #8b5cf6);
+  filter: blur(8px);
+  opacity: .85;
+  z-index: -1;
+  animation: hero-spin 14s linear infinite;
+}
+/* soft glow blob */
+.hero__blob{
+  position: absolute; inset: -20px; border-radius: 50%; z-index: -2;
+  background: radial-gradient(60% 60% at 50% 50%, rgba(99,102,241,.22), transparent 70%);
+  animation: hero-float 7s ease-in-out infinite;
+}
+
+/* animations for the ring + gentle float */
+@keyframes hero-spin { to { transform: rotate(360deg); } }
+@keyframes hero-float { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-8px);} }
+
+/* Respect user “reduced motion” preference */
+@media (prefers-reduced-motion: reduce){
+  .hero__ring, .hero__blob { animation: none; }
+}
+
+/* Optional: slightly larger avatar on big screens WITHOUT touching layout */
+@media (min-width: 992px){
+  .hero__avatar{ width: 260px; }
+}
+/* === HOME: layout avatar a destra (desktop) e sotto (mobile) === */
+/* Imposto aree di griglia per poter ordinare data/avatar senza toccare l'HTML */
+.home__container{
+  display: grid;               /* già grid, ribadisco per sicurezza */
+  grid-template-columns: 1fr;  /* mobile: una colonna */
+  grid-template-areas:
+    "data"
+    "avatar";
+  gap: 1.5rem;
+}
+.home__data{ grid-area: data; }
+.hero__avatar{ grid-area: avatar; }
+
+/* Desktop/tablet larghi: due colonne, testo a sinistra e avatar a destra */
+@media (min-width: 992px){
+  .home__container{
+    grid-template-columns: 1.2fr .9fr;
+    grid-template-areas: "data avatar";
+    align-items: center;
+  }
+  .hero__avatar{
+    justify-self: center;   /* spinge l’avatar al bordo destro della colonna */
+    margin: 2.5;
+  }
+}
+
+/* === AVATAR TONDO: anello grigio/rosso (no rainbow), glow soft === */
+.hero__avatar{
+  position: relative;
+  width: 240px;             /* dimensione di base */
+  max-width: 60vw;
+  aspect-ratio: 1/1;
+  margin: 0 auto;           /* centrato su mobile */
+  border-radius: 50%;
+  isolation: isolate;
+}
+@media (min-width: 992px){
+  .hero__avatar{ width: 280px; margin: 0; } /* più grande su desktop */
+}
+.hero__avatar > img{
+  width: 100%; height: 100%; object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  box-shadow: 0 10px 35px rgba(0,0,0,.18);
+  filter: contrast(1.03) saturate(1.02);
+}
+
+/* Anello: toni grigi -> rosso del tema (usa --skin-color) */
+.hero__ring{
+  position: absolute; inset: -6px; border-radius: 50%;
+  /* gradiente neutro che richiama il rosso del sito senza effetto arcobaleno */
+  background: conic-gradient(
+    from 0deg,
+    rgba(255,255,255,0.10),
+    rgba(200,200,200,0.18),
+    rgba(120,120,120,0.24),
+    rgba(80,80,80,0.22),
+    rgba(40,40,40,0.20),
+    var(--skin-color),
+    rgba(120,120,120,0.24),
+    rgba(200,200,200,0.18),
+    rgba(255,255,255,0.10)
+  );
+  filter: blur(7px);
+  opacity: .85;
+  z-index: -1;
+  animation: hero-ring-spin 18s linear infinite; /* rotazione molto soft */
+}
+@keyframes hero-ring-spin { to { transform: rotate(360deg); } }
+
+/* Glow morbido dietro (leggermente rossastro + grigio) */
+.hero__blob{
+  position: absolute; inset: -20px; border-radius: 50%; z-index: -2;
+  background:
+    radial-gradient(60% 60% at 50% 50%, color-mix(in hsl, var(--skin-color) 35%, transparent), transparent 70%),
+    radial-gradient(80% 80% at 50% 50%, rgba(180,180,180,.15), transparent 75%);
+  animation: hero-blob-float 8s ease-in-out infinite;
+}
+@keyframes hero-blob-float { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-8px);} }
+
+@media (prefers-reduced-motion: reduce){
+  .hero__ring, .hero__blob { animation: none; }
+}
+
+/* === STARRY BACKGROUND: assicurati visibile dietro a tutto === */
+#bg-stars{
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  display: block;
+}
+.section{ background: transparent; } /* lascia vedere le stelle */
+
+/* === ABOUT: testo centrato === */
+/* Se usi già <div class="about__container container grid about--centered"> */
+.about__container.about--centered{
+  grid-template-columns: 1fr !important;
+  justify-items: center;
+}
+.about--centered .about__data{
+  text-align: center;
+  max-width: 780px;
+  margin: 0 auto;
+}
+.about--centered .about__description{ padding-right: 0 !important; }
+.about--centered .about__info{ justify-content: center; }
+
+.about__container:not(.about--centered) .about__img + .about__data{ text-align: left; }
+.about__container:not(.about--centered):has(.about__data):not(:has(.about__img)) .about__data{
+  text-align: center;
+  max-width: 780px;
+  margin: 0 auto;
+}
+/* === HOME: griglia desktop per avere testo a sinistra e avatar a destra === */
+@media (min-width: 992px){
+  .home__container{
+    display: grid;
+    grid-template-columns: 1.2fr .9fr;
+    align-items: center;
+    gap: 1.5rem;
+  }
+}
+
+/* === Avatar base (dimensioni, forma, glow) === */
+.hero__avatar{
+  position: relative;
+  width: 220px;             /* size mobile */
+  max-width: 60vw;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  isolation: isolate;
+}
+.hero__avatar > img{
+  width: 100%; height: 100%; object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  box-shadow: 0 10px 35px rgba(0,0,0,.18);
+  filter: contrast(1.03) saturate(1.02);
+}
+
+/* Ring: grey -> site red (no rainbow) */
+.hero__ring{
+  position: absolute; inset: -6px; border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255,255,255,0.10),
+    rgba(200,200,200,0.18),
+    rgba(120,120,120,0.24),
+    rgba(80,80,80,0.22),
+    rgba(40,40,40,0.20),
+    var(--skin-color),
+    rgba(120,120,120,0.24),
+    rgba(200,200,200,0.18),
+    rgba(255,255,255,0.10)
+  );
+  filter: blur(7px);
+  opacity: .85;
+  z-index: -1;
+}
+
+/* Back glow */
+.hero__blob{
+  position: absolute; inset: -20px; border-radius: 50%; z-index: -2;
+  background:
+    radial-gradient(60% 60% at 50% 50%, color-mix(in hsl, var(--skin-color) 35%, transparent), transparent 70%),
+    radial-gradient(80% 80% at 50% 50%, rgba(180,180,180,.15), transparent 75%);
+}
+
+/* === Stop animations on small/medium to avoid “moving around” === */
+.hero__ring, .hero__blob{ animation: none; }
+
+/* === Visibility + placement: mobile vs desktop === */
+.hero__avatar--mobile{
+  display: block;
+  margin: 1rem auto 0;         /* centrata tra testo e bottone */
+}
+.hero__avatar--desktop{
+  display: none;
+}
+
+@media (min-width: 992px){
+  .hero__avatar{ width: 280px; }     /* size desktop */
+  .hero__avatar--mobile{ display: none; }
+  .hero__avatar--desktop{
+    display: block;
+    justify-self: center;            /* più centrata, non appiccicata a destra */
+    margin-left: 1.2rem;             /* leggero spostamento verso il centro */
+  }
+
+  /* Attiva animazioni SOLO su desktop, sottili */
+  .hero__ring{ animation: hero-ring-spin 18s linear infinite; }
+  .hero__blob{ animation: hero-blob-float 8s ease-in-out infinite; }
+  @keyframes hero-ring-spin { to { transform: rotate(360deg); } }
+  @keyframes hero-blob-float { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-8px);} }
+}
+
+/* === Starry background (se lo usi) === */
+#bg-stars{
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  z-index: -1; pointer-events: none; display: block;
+}
+.section{ background: transparent; }
+
+/* === About centrato (se non l’hai già messo) === */
+.about__container.about--centered{
+  grid-template-columns: 1fr !important;
+  justify-items: center;
+}
+.about--centered .about__data{
+  text-align: center; max-width: 780px; margin: 0 auto;
+}
+.about--centered .about__description{ padding-right: 0 !important; }
+.about--centered .about__info{ justify-content: center; }
+/* ================================
+   HOME — Small & Medium fixes only
+   Keep laptop (>= 992px) as-is
+   ================================ */
+
+/* Phones + Tablets (<= 991px): stable vertical flow */
+@media (max-width: 991px){
+
+  /* Avoid 100vh issues and jumping */
+  .home{
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 2rem 0 2.25rem;
+  }
+
+  /* One column, centered, predictable */
+  .home__container{
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 1rem;
+  }
+
+  /* Social: not absolute on small/medium */
+  .home__social{
+    position: static !important;
+    margin: .25rem 0 1rem !important;
+    display: flex; align-items: center; justify-content: center;
+    gap: .75rem 1rem;
+  }
+  .home__social-follow::after{ display:none !important; }
+
+  /* Text block width */
+  .home__data{
+    padding: 0 1rem !important;
+    max-width: 720px;
+  }
+
+  /* Avatar sits between description and button, with breathing room */
+  .hero__avatar{
+    width: 220px;               /* phones/tablets */
+    max-width: 65vw;
+    margin: 1rem auto 1.2rem !important;  /* separates from text & button */
+  }
+
+  /* No glow animation on small/medium (looks like movement) */
+  .hero__ring, .hero__blob{ animation: none !important; }
+
+  /* Button never touches the photo */
+  .home .button{ margin-top: .25rem !important; }
+
+  /* Bottom info strip: inline, not absolute */
+  .my__info{
+    position: static !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .75rem 1.25rem;
+    margin-top: 1rem;
+  }
+}
+
+/* Phones only (<= 767px): slightly smaller avatar & tighter paddings */
+@media (max-width: 767px){
+  .hero__avatar{ width: 200px; max-width: 70vw; }
+  .home{ padding: 1.6rem 0 2rem; }
+  .home__title{ line-height: 1.15; }
+}
+
+/* Tablets only (768px–991px): give text a bit more room */
+@media (min-width: 768px) and (max-width: 991px){
+  .hero__avatar{ width: 230px; }
+  .home__data{ max-width: 760px; }
+}
+/* === Skills: mobile accordion (≤724px) === */
+@media (max-width: 724px){
+  /* nascondo il contenitore originale: i pannelli verranno spostati sotto i titoli */
+  .skills__content{ display:none !important; }
+
+  /* pannelli come tendina */
+  .skills__group{
+    overflow: hidden;
+    max-height: 0;                 /* chiusa di default */
+    transition: max-height .3s ease;
+    margin: 0 .25rem;
+    background: var(--box-color);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: .75rem;
+  }
+
+  /* padding interno solo quando aperto (così non “sporca” l’altezza chiusa) */
+  .skills__group-inner{ padding: .9rem .9rem 1rem; }
+
+  /* separazione tra header e pannello */
+  .skills__header{ margin-bottom: .5rem; }
+  .skills__header.skills__active{ /* facoltativo: accentua lo stato attivo */
+    filter: saturate(1.1);
+  }
+}
