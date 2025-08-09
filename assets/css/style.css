@@ -1456,28 +1456,86 @@ input{
   .hero__avatar{ width: 230px; }
   .home__data{ max-width: 760px; }
 }
-/* === Skills: mobile accordion (≤724px) === */
-@media (max-width: 724px){
-  /* nascondo il contenitore originale: i pannelli verranno spostati sotto i titoli */
-  .skills__content{ display:none !important; }
-
-  /* pannelli come tendina */
-  .skills__group{
-    overflow: hidden;
-    max-height: 0;                 /* chiusa di default */
-    transition: max-height .3s ease;
-    margin: 0 .25rem;
-    background: var(--box-color);
-    border: 1px solid rgba(255,255,255,.06);
-    border-radius: .75rem;
+/* =========================================
+   SKILLS — FAQ-style accordion (<=724px)
+   Imitates the demo: plus/minus, smooth slide
+   ========================================= */
+   @media (max-width: 724px){
+    /* make the whole section a clean stack */
+    .skills__container{
+      display: block;
+    }
+  
+    /* Each header looks like a FAQ item header */
+    .skills__header{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      padding: 14px 16px;
+      margin: 10px 0 6px;
+      background: var(--box-color);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+  
+    /* Left part (icon + titles) align nicely */
+    .skills__header i.skills__icon{ font-size: 1.2rem; color: var(--skin-color); margin-right: .5rem; }
+    .skills__title{ display:block; font-size: 1rem; }
+    .skills__subtitles{ display:block; font-size: .85rem; opacity:.8; }
+  
+    /* Replace the chevron with a plus/minus like the demo */
+    .skills__header .skills__arrow{ display: none; } /* hide your chevron */
+    .skills__header::after{
+      content: '+';
+      font-weight: 700;
+      font-size: 1.2rem;
+      line-height: 1;
+      opacity: .9;
+      transition: transform .25s ease, opacity .25s ease, content .2s;
+    }
+    .skills__header.skills__open::after{
+      content: '—'; /* en dash look */
+      transform: none;
+    }
+  
+    /* Panels behave like a dropdown under the header */
+    .skills__group{
+      overflow: hidden;
+      max-height: 0;                 /* closed by default */
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px;
+      background: rgba(255,255,255,.02);
+      margin: 0 0 10px;
+      transition: max-height .35s ease;
+    }
+  
+    /* we add an inner wrapper via JS so padding doesn't affect height calc */
+    .skills__group-inner{
+      padding: 12px 14px 14px;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+    .skills__group.is-open .skills__group-inner{
+      opacity: 1;
+      transform: translateY(0);
+    }
+  
+    /* Grid of skills inside panel stays neat */
+    .skills__list{
+      display: grid;
+      gap: .9rem;
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 480px){
+      .skills__list{ grid-template-columns: 1fr; }
+    }
+  
+    /* Avoid tabs behavior on mobile look&feel */
+    .skills__tabs{ margin-bottom: 6px; }
   }
-
-  /* padding interno solo quando aperto (così non “sporca” l’altezza chiusa) */
-  .skills__group-inner{ padding: .9rem .9rem 1rem; }
-
-  /* separazione tra header e pannello */
-  .skills__header{ margin-bottom: .5rem; }
-  .skills__header.skills__active{ /* facoltativo: accentua lo stato attivo */
-    filter: saturate(1.1);
-  }
-}
+  

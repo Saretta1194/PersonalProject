@@ -267,106 +267,121 @@ document.addEventListener('DOMContentLoaded', () => {
   })();
 
 });
-/* === Skills: mobile accordion (≤724px) === */
-(function skillsAccordionMobile(){
+/**/ 
+/* ===== SKILLS — FAQ-style accordion on small screens (<=724px) ===== */
+(function skillsFaqAccordion(){
   const BP = 724;
-  const tabsWrap   = document.querySelector('.skills__tabs');
-  const contentWrap= document.querySelector('.skills__content');
+  const tabsWrap    = document.querySelector('.skills__tabs');
+  const contentWrap = document.querySelector('.skills__content');
   if (!tabsWrap || !contentWrap) return;
 
   const headers = Array.from(tabsWrap.querySelectorAll('.skills__header'));
   const panels  = Array.from(contentWrap.querySelectorAll('.skills__group'));
 
-  // crea una mappa header -> panel tramite data-target
-  const getPanelForHeader = (header) => {
-    const sel = header.dataset.target;
+  const panelFor = (header) => {
+    const sel = header.__targetSel || header.getAttribute('data-target');
     return sel ? document.querySelector(sel) : null;
   };
 
-  // per padding solo quando aperto, usiamo un inner container
   function ensureInner(panel){
     if (!panel) return null;
-    if (!panel.firstElementChild || !panel.firstElementChild.classList.contains('skills__group-inner')){
-      const inner = document.createElement('div');
+    let inner = panel.querySelector('.skills__group-inner');
+    if (!inner){
+      inner = document.createElement('div');
       inner.className = 'skills__group-inner';
-      // sposta tutti i figli attuali dentro l'inner
       while (panel.firstChild) inner.appendChild(panel.firstChild);
       panel.appendChild(inner);
-      return inner;
     }
-    return panel.firstElementChild;
+    return inner;
   }
 
-  // apre/chiude con animazione max-height
   function setOpen(panel, open){
-    if (!panel) return;
     const inner = ensureInner(panel);
     if (!inner) return;
     if (open){
+      panel.classList.add('is-open');
       panel.style.maxHeight = inner.scrollHeight + 'px';
     } else {
+      panel.classList.remove('is-open');
       panel.style.maxHeight = '0px';
     }
   }
 
-  // chiude tutti tranne uno
-  function closeOthers(except){
-    panels.forEach(p => { if (p !== except) setOpen(p, false); });
-    headers.forEach(h => { if (getPanelForHeader(h) !== except) h.classList.remove('skills__active'); });
+  function closeOthers(exceptPanel){
+    panels.forEach(p => { if (p !== exceptPanel) setOpen(p, false); });
+    headers.forEach(h => {
+      const p = panelFor(h);
+      if (p !== exceptPanel) h.classList.remove('skills__open');
+    });
   }
 
-  // attiva accordion su mobile: sposta i pannelli sotto ai rispettivi header
+  function deactivateTabsOnMobile(){
+    // Temporarily remove data-target so il vecchio handler non scatta
+    headers.forEach(h => {
+      if (!h.__targetSel) h.__targetSel = h.getAttribute('data-target');
+      h.removeAttribute('data-target');
+    });
+  }
+  function restoreTabsOnDesktop(){
+    headers.forEach(h => {
+      if (h.__targetSel) h.setAttribute('data-target', h.__targetSel);
+    });
+  }
+
   function activateMobile(){
-    // sposta ogni pannello subito dopo il suo header
-    headers.forEach((h) => {
-      const p = getPanelForHeader(h);
+    deactivateTabsOnMobile();
+
+    headers.forEach((h, idx) => {
+      const p = panelFor(h);
       if (!p) return;
-      if (p.previousElementSibling !== h){ // evita di rispostare ogni volta
-        h.insertAdjacentElement('afterend', p);
-      }
-      // stato iniziale: apri solo quello con header .skills__active
-      const isActive = h.classList.contains('skills__active');
-      setOpen(p, isActive);
-    });
 
-    // click/tastiera: toggle tenda sotto l'header
-    headers.forEach((h) => {
-      if (h.__accordionBound) return; // bind una sola volta
-      const handler = (e) => {
+      // Metti il pannello subito dopo il suo header (una volta sola)
+      if (p.previousElementSibling !== h) h.insertAdjacentElement('afterend', p);
+
+      // Stato iniziale: apri solo il primo
+      const open = idx === 0;
+      h.classList.toggle('skills__open', open);
+      setOpen(p, open);
+
+      if (h.__faqBound) return;
+      const toggle = (e) => {
+        // Evita che i vecchi listener reagiscano
+        e.preventDefault();
+        e.stopPropagation();
         if (e.type === 'keydown' && !(e.key === 'Enter' || e.key === ' ')) return;
-        if (e.type === 'keydown') e.preventDefault();
 
-        const p = getPanelForHeader(h);
-        if (!p) return;
+        const panel = panelFor(h);
+        if (!panel) return;
 
-        const willOpen = p.style.maxHeight === '0px' || !p.style.maxHeight;
-        closeOthers(p);
-        h.classList.toggle('skills__active', willOpen);
-        setOpen(p, willOpen);
-        // scroll leggero per vedere l'inizio del pannello
-        if (willOpen) h.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+        const willOpen = !(panel.classList.contains('is-open') && panel.style.maxHeight !== '0px');
+        closeOthers(panel);
+        h.classList.toggle('skills__open', willOpen);
+        setOpen(panel, willOpen);
+        if (willOpen) h.scrollIntoView({ behavior: 'smooth', block: 'start' });
       };
-      h.addEventListener('click', handler);
-      h.addEventListener('keydown', handler);
+      h.addEventListener('click', toggle);
+      h.addEventListener('keydown', toggle);
       h.setAttribute('tabindex','0');
-      h.__accordionBound = true;
+      h.__faqBound = true;
     });
   }
 
-  // ripristina desktop: rimette i pannelli dentro .skills__content
   function activateDesktop(){
-    // rimetti i pannelli nell'ordine originale
-    panels.forEach(p => contentWrap.appendChild(p));
-    // lascia gestire l'apertura/chiusura al tuo codice tabs esistente (classe skills__active)
-    // e rimuovi max-height inline (così le altezze tornano naturali)
-    panels.forEach(p => { p.style.maxHeight = ''; });
+    restoreTabsOnDesktop();
+    // Rimetti i pannelli dentro .skills__content (layout originale)
+    panels.forEach(p => {
+      contentWrap.appendChild(p);
+      p.style.maxHeight = '';
+      p.classList.remove('is-open');
+    });
+    headers.forEach(h => h.classList.remove('skills__open'));
   }
 
   function onResize(){
-    const isMobile = window.innerWidth <= BP;
-    if (isMobile) activateMobile(); else activateDesktop();
+    if (window.innerWidth <= BP) activateMobile();
+    else activateDesktop();
   }
 
   window.addEventListener('resize', onResize, { passive: true });
-  onResize(); // stato iniziale
+  onResize(); // initial
 })();
