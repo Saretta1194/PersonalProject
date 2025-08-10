@@ -1103,15 +1103,20 @@ input{
     }
   }
   /* === Star background canvas (behind everything) === */
+/* Star background: fixed, behind everything */
 #bg-stars{
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;          /* stay behind all content */
-  pointer-events: none; /* do not block clicks */
-  display: block;
+  z-index: -1;
+  pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: layout paint size;
 }
+
 
 /* Keep sections transparent so stars remain visible (your sections are already dark) */
 .section { background: transparent; }

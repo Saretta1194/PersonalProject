@@ -181,90 +181,82 @@ document.addEventListener('DOMContentLoaded', () => {
      - Respects prefers-reduced-motion
      - Handles HiDPI (retina) scaling to keep stars crisp
   */
-  (function initStars(){
-    const canvas = document.getElementById('bg-stars');
-    if (!canvas) return; // Safe exit if canvas is not present
+ /*========== STARRY SKY — twinkle-only (no vertical drift) ==========*/
+(function initStarsTwinkleOnly(){
+  const canvas = document.getElementById('bg-stars');
+  if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    const NUM_STARS = 120;        // Adjust to taste (performance vs. density)
-    const MAX_DPR = 2;            // Cap devicePixelRatio to avoid huge canvases
-    let stars = [];
-    let w = 0, h = 0;
-    let running = true;
+  const ctx = canvas.getContext('2d', { alpha: true });
+  let stars = [];
+  const NUM_STARS = 120;     // puoi aumentare/diminuire
+  const MAX_DPR    = 2;      // limita il DPR per performance
+  let w = 0, h = 0, dpr = 1;
+  let rafId = null;
 
-    // Respect user preference for reduced motion
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    function handleMotion(e) {
-      running = !e.matches;
-      if (running) requestAnimationFrame(animate);
+  // Rispetta prefers-reduced-motion
+  const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let running = !media.matches;
+  if (media.addEventListener) media.addEventListener('change', () => {
+    running = !media.matches;
+    if (running && !rafId) rafId = requestAnimationFrame(draw);
+  });
+
+  function resize(){
+    const vw = (window.visualViewport && window.visualViewport.width)  || window.innerWidth;
+    const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+
+    w = vw; h = vh;
+    dpr = Math.max(1, Math.min(MAX_DPR, window.devicePixelRatio || 1));
+
+    canvas.width  = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    canvas.style.width  = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // (ri)genera le stelle con posizioni casuali
+    stars = [];
+    for (let i = 0; i < NUM_STARS; i++){
+      stars.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.5 + 0.5,       // raggio
+        tw: Math.random() * 0.6 + 0.4       // fattore di twinkle
+      });
     }
-    if (media.addEventListener) media.addEventListener('change', handleMotion);
-    else if (media.addListener) media.addListener(handleMotion); // Older Safari
-    handleMotion(media);
+  }
 
-    // Resize canvas and regenerate stars
-    function resize() {
-      w = window.innerWidth;
-      h = window.innerHeight;
+  function draw(){
+    rafId = null;
+    if (!running) return;
 
-      // HiDPI scaling
-      const dpr = Math.max(1, Math.min(MAX_DPR, window.devicePixelRatio || 1));
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(h * dpr);
-      canvas.style.width = w + 'px';
-      canvas.style.height = h + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // pulizia completa ad ogni frame (niente scie/accumulo)
+    ctx.clearRect(0, 0, w, h);
 
-      // Create stars
-      stars = [];
-      for (let i = 0; i < NUM_STARS; i++) {
-        stars.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: Math.random() * 1.5 + 0.5,  // radius
-          vy: Math.random() * 0.3 + 0.05, // vertical speed
-          twinkle: Math.random() * 0.5 + 0.5 // twinkle factor
-        });
-      }
-    }
-
-    // Draw all stars
-    function draw() {
-      ctx.clearRect(0, 0, w, h);
-      const t = Date.now() * 0.001;
-      for (const s of stars) {
-        // Light twinkle using sine wave
-        const alpha = 0.7 + Math.sin((t + s.x) * s.twinkle) * 0.3;
-        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    // Update positions
-    function update() {
-      for (const s of stars) {
-        s.y += s.vy;
-        if (s.y > h) {
-          s.y = 0;
-          s.x = Math.random() * w;
-        }
-      }
+    const t = performance.now() * 0.001;
+    for (const s of stars){
+      // solo twinkle (variazione di opacità), nessuno spostamento
+      const alpha = 0.65 + Math.sin((t + s.x * 0.01) * s.tw) * 0.35;
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    // Animation loop
-    function animate() {
-      if (!running) return;
-      draw();
-      update();
-      requestAnimationFrame(animate);
-    }
+    rafId = requestAnimationFrame(draw);
+  }
 
-    window.addEventListener('resize', resize, { passive: true });
-    resize();
-    if (running) requestAnimationFrame(animate);
-  })();
+  // eventi
+  window.addEventListener('resize', resize, { passive: true });
+  if (window.visualViewport){
+    window.visualViewport.addEventListener('resize', resize, { passive: true });
+  }
+
+  // avvio
+  resize();
+  if (running) rafId = requestAnimationFrame(draw);
+})();
+
 
 });
 /**/ 
