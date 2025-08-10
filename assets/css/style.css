@@ -1538,4 +1538,9 @@ input{
     /* Avoid tabs behavior on mobile look&feel */
     .skills__tabs{ margin-bottom: 6px; }
   }
-  
+  /* Skills: ensure panels are visible on small screens */
+@media (max-width: 724px){
+  .skills [data-content]{
+    display: block !important;
+  }
+}

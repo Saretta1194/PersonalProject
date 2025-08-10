@@ -278,11 +278,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const headers = Array.from(tabsWrap.querySelectorAll('.skills__header'));
   const panels  = Array.from(contentWrap.querySelectorAll('.skills__group'));
 
+  // Map header -> panel using the original data-target (preservato in __targetSel)
   const panelFor = (header) => {
     const sel = header.__targetSel || header.getAttribute('data-target');
     return sel ? document.querySelector(sel) : null;
   };
 
+  // Ensure inner wrapper so padding doesn't break height calc
   function ensureInner(panel){
     if (!panel) return null;
     let inner = panel.querySelector('.skills__group-inner');
@@ -295,6 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return inner;
   }
 
+  // Open/close with measured height
   function setOpen(panel, open){
     const inner = ensureInner(panel);
     if (!inner) return;
@@ -315,8 +318,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Temporarily disable tabs behavior on mobile (prevents double-click feel)
   function deactivateTabsOnMobile(){
-    // Temporarily remove data-target so il vecchio handler non scatta
     headers.forEach(h => {
       if (!h.__targetSel) h.__targetSel = h.getAttribute('data-target');
       h.removeAttribute('data-target');
@@ -335,17 +338,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const p = panelFor(h);
       if (!p) return;
 
-      // Metti il pannello subito dopo il suo header (una volta sola)
+      // Make sure the panel is visible on mobile (base CSS may hide it)
+      p.style.display = 'block';
+
+      // Move panel right after its header (once)
       if (p.previousElementSibling !== h) h.insertAdjacentElement('afterend', p);
 
-      // Stato iniziale: apri solo il primo
+      // Initial state: open only the first
       const open = idx === 0;
       h.classList.toggle('skills__open', open);
       setOpen(p, open);
 
+      // Bind once
       if (h.__faqBound) return;
       const toggle = (e) => {
-        // Evita che i vecchi listener reagiscano
+        // One-click behavior: stop old handlers & default
         e.preventDefault();
         e.stopPropagation();
         if (e.type === 'keydown' && !(e.key === 'Enter' || e.key === ' ')) return;
@@ -368,11 +375,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function activateDesktop(){
     restoreTabsOnDesktop();
-    // Rimetti i pannelli dentro .skills__content (layout originale)
+    // Put panels back into .skills__content (original layout)
     panels.forEach(p => {
       contentWrap.appendChild(p);
       p.style.maxHeight = '';
       p.classList.remove('is-open');
+      p.style.display = ''; // reset for desktop tabs layout
     });
     headers.forEach(h => h.classList.remove('skills__open'));
   }
