@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeOthers(panel);
         h.classList.toggle('skills__open', willOpen);
         setOpen(panel, willOpen);
-        if (willOpen) h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        //if (willOpen) h.scrollIntoView({ behavior: 'smooth', block: 'start' });
       };
       h.addEventListener('click', toggle);
       h.addEventListener('keydown', toggle);
