@@ -1103,22 +1103,15 @@ input{
     }
   }
   /* === Star background canvas (behind everything) === */
-/* Starry background: lock to viewport & isolate layer to avoid ghosting on mobile */
 #bg-stars{
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;            /* behind all */
-  pointer-events: none;   /* non-blocking */
-  /* force its own compositor layer */
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  /* isolate layout/paint so scrolling doesn't smear */
-  contain: layout paint size;
+  z-index: -1;          /* stay behind all content */
+  pointer-events: none; /* do not block clicks */
+  display: block;
 }
-
 
 /* Keep sections transparent so stars remain visible (your sections are already dark) */
 .section { background: transparent; }
