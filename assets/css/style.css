@@ -1254,17 +1254,6 @@ input{
   .hero__ring, .hero__blob { animation: none; }
 }
 
-/* === STARRY BACKGROUND: assicurati visibile dietro a tutto === */
-#bg-stars{
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  pointer-events: none;
-  display: block;
-}
-.section{ background: transparent; } /* lascia vedere le stelle */
 
 /* === ABOUT: testo centrato === */
 /* Se usi già <div class="about__container container grid about--centered"> */
@@ -1368,13 +1357,6 @@ input{
   @keyframes hero-ring-spin { to { transform: rotate(360deg); } }
   @keyframes hero-blob-float { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-8px);} }
 }
-
-/* === Starry background (se lo usi) === */
-#bg-stars{
-  position: fixed; inset: 0; width: 100%; height: 100%;
-  z-index: -1; pointer-events: none; display: block;
-}
-.section{ background: transparent; }
 
 /* === About centrato (se non l’hai già messo) === */
 .about__container.about--centered{

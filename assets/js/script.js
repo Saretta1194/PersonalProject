@@ -181,17 +181,20 @@ document.addEventListener('DOMContentLoaded', () => {
      - Respects prefers-reduced-motion
      - Handles HiDPI (retina) scaling to keep stars crisp
   */
- /*========== STARRY SKY — twinkle-only (no vertical drift) ==========*/
-(function initStarsTwinkleOnly(){
+/*========== STARRY SKY — twinkle + gentle drift, no trails ==========*/
+(function initStarsMovingNoTrails(){
   const canvas = document.getElementById('bg-stars');
   if (!canvas) return;
+  if (canvas.__starsInit) return; // evita doppie init
+  canvas.__starsInit = true;
 
   const ctx = canvas.getContext('2d', { alpha: true });
   let stars = [];
-  const NUM_STARS = 120;     // puoi aumentare/diminuire
-  const MAX_DPR    = 2;      // limita il DPR per performance
+  const NUM_STARS = 120;
+  const MAX_DPR = 2;
   let w = 0, h = 0, dpr = 1;
   let rafId = null;
+  let lastT = 0;
 
   // Rispetta prefers-reduced-motion
   const media = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -201,41 +204,78 @@ document.addEventListener('DOMContentLoaded', () => {
     if (running && !rafId) rafId = requestAnimationFrame(draw);
   });
 
-  function resize(){
-    const vw = (window.visualViewport && window.visualViewport.width)  || window.innerWidth;
-    const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+  // Piccolo helper per random in range
+  const rand = (min, max) => Math.random() * (max - min) + min;
 
-    w = vw; h = vh;
-    dpr = Math.max(1, Math.min(MAX_DPR, window.devicePixelRatio || 1));
-
-    canvas.width  = Math.floor(w * dpr);
-    canvas.height = Math.floor(h * dpr);
-    canvas.style.width  = w + 'px';
-    canvas.style.height = h + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    // (ri)genera le stelle con posizioni casuali
+  function makeStars(){
     stars = [];
     for (let i = 0; i < NUM_STARS; i++){
+      const speed = rand(0.005, 0.03);      // px/ms circa (molto lento)
+      const angle = rand(-0.25, 0.25);      // drift quasi verticale
+      const vx = Math.sin(angle) * speed;
+      const vy = Math.cos(angle) * speed;
+
       stars.push({
         x: Math.random() * w,
         y: Math.random() * h,
         r: Math.random() * 1.5 + 0.5,       // raggio
-        tw: Math.random() * 0.6 + 0.4       // fattore di twinkle
+        tw: Math.random() * 0.6 + 0.4,      // fattore twinkle
+        vx, vy
       });
     }
   }
 
-  function draw(){
+  function sizeCanvas(){
+    const vw = (window.visualViewport && window.visualViewport.width)  || window.innerWidth;
+    const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+    w = vw; h = vh;
+    dpr = Math.max(1, Math.min(MAX_DPR, window.devicePixelRatio || 1));
+
+    const newW = Math.floor(w * dpr);
+    const newH = Math.floor(h * dpr);
+
+    // ridimensiona solo se cambia davvero (evita rigenerazioni continue su mobile)
+    if (canvas.width !== newW || canvas.height !== newH){
+      canvas.width  = newW;
+      canvas.height = newH;
+      canvas.style.width  = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      makeStars();
+    }
+  }
+
+  // debounce del resize (utile su mobile)
+  let resizeTimer = null;
+  function onResize(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(sizeCanvas, 80);
+  }
+
+  function draw(ts){
     rafId = null;
     if (!running) return;
 
-    // pulizia completa ad ogni frame (niente scie/accumulo)
+    if (!lastT) lastT = ts;
+    const dt = Math.min(50, ts - lastT); // clamp per salti di tempo
+    lastT = ts;
+
+    // PULIZIA COMPLETA: niente accumulo/scie
     ctx.clearRect(0, 0, w, h);
 
-    const t = performance.now() * 0.001;
+    const t = ts * 0.001;
     for (const s of stars){
-      // solo twinkle (variazione di opacità), nessuno spostamento
+      // Aggiorna posizione con delta time (ms -> px via vx/vy)
+      s.x += s.vx * dt;
+      s.y += s.vy * dt;
+
+      // Wrap ai bordi (riappare dal lato opposto)
+      if (s.x < -2) s.x = w + 2;
+      else if (s.x > w + 2) s.x = -2;
+      if (s.y < -2) s.y = h + 2;
+      else if (s.y > h + 2) s.y = -2;
+
+      // Twinkle (opacità che varia nel tempo)
       const alpha = 0.65 + Math.sin((t + s.x * 0.01) * s.tw) * 0.35;
       ctx.fillStyle = `rgba(255,255,255,${alpha})`;
       ctx.beginPath();
@@ -246,16 +286,27 @@ document.addEventListener('DOMContentLoaded', () => {
     rafId = requestAnimationFrame(draw);
   }
 
-  // eventi
-  window.addEventListener('resize', resize, { passive: true });
+  // Eventi
+  window.addEventListener('resize', onResize, { passive: true });
   if (window.visualViewport){
-    window.visualViewport.addEventListener('resize', resize, { passive: true });
+    window.visualViewport.addEventListener('resize', onResize, { passive: true });
   }
+  document.addEventListener('visibilitychange', () => {
+    // pausa quando la tab è nascosta (risparmia batteria, nessun backlog)
+    if (document.hidden){
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+      lastT = 0;
+    } else {
+      if (!rafId && running) rafId = requestAnimationFrame(draw);
+    }
+  });
 
-  // avvio
-  resize();
+  // Avvio
+  sizeCanvas();
   if (running) rafId = requestAnimationFrame(draw);
 })();
+
 
 
 });
